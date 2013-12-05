@@ -2,19 +2,18 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xwpft="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Background="White" SizeToContent="Height"
-        Title="MainWindow"  Width="400" DataContextChanged="Window_DataContextChanged">
+        xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Background="White" SizeToContent="WidthAndHeight"
+        Title="mentalmath" ResizeMode="NoResize" DataContextChanged="Window_DataContextChanged">
     <Window.Resources>
         <Storyboard x:Key="sok" >
             <ColorAnimation Storyboard.TargetProperty="Color" Storyboard.TargetName="bgrectok" Duration="0:0:0.1" From="#FF41E141" AutoReverse="True" To="#FF80FF80" />
-           <!-- <ColorAnimation Storyboard.TargetProperty="Color" Storyboard.TargetName="bgrect" Duration="0:0:0.1" From="LightGreen" To="Transparent" />-->
         </Storyboard>
         <Storyboard x:Key="snok" >
             <ColorAnimation Storyboard.TargetProperty="Color" Storyboard.TargetName="bgrectnok" Duration="0:0:0.1" From="#FFE14141" To="#FFFF8080" AutoReverse="True" />
-            <!--<ColorAnimation Storyboard.TargetProperty="Color" Storyboard.TargetName="bgrectnok" Duration="0:0:0.1" From="LightSalmon" To="Transparent" />-->
-        </Storyboard>
+       </Storyboard>
         <BooleanToVisibilityConverter x:Key="b2vc" />
     </Window.Resources>
+    <Border BorderBrush="#FF41B1E1" BorderThickness="1">
     <Grid>
         <Grid>  
             <Grid.RowDefinitions>
@@ -58,10 +57,10 @@
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Margin="0,50,0,20" Text="{Binding CurrentExpression}" HorizontalAlignment="Center" FontSize="40" FontWeight="Bold" />
+                <TextBlock Grid.Row="0" MinWidth="500" Margin="0,50,0,20" Text="{Binding CurrentExpression}" HorizontalAlignment="Center" FontSize="40" FontWeight="Bold" TextAlignment="Center" />
                 <TextBlock Grid.Row="1" Margin="0,0,0,30" Text="= ?" HorizontalAlignment="Center" FontSize="30" FontWeight="Bold" />
-                <TextBox Width="250" Grid.Row="2" Name="input" Text="{Binding Path=UserInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="40" HorizontalAlignment="Center" HorizontalContentAlignment="Center" AutoWordSelection="False"  KeyDown="input_KeyDown"  Margin="0,0,0,20"/>
-                <Expander Grid.Row="3" Header="Einstellungen">
+                <TextBox Width="200" Grid.Row="2" Name="input" Text="{Binding Path=UserInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="40" HorizontalAlignment="Center" HorizontalContentAlignment="Center" AutoWordSelection="False"  KeyDown="input_KeyDown"  Margin="0,0,0,20"/>
+                <Expander Grid.Row="3" Margin="5" Header="Settings">
                     <Grid>
                         <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10">
@@ -71,16 +70,16 @@
                             <CheckBox Content=":" IsChecked="{Binding Config.Divide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                             <StackPanel Margin="10" Orientation="Horizontal">
-                                <TextBlock Text="Operanden: " />
+                                <TextBlock Text="Operands:   " />
                                 <xwpft:IntegerUpDown Minimum="2" Maximum="5" Value="{Binding Config.MinOperands}" />
-                                <TextBlock Text=" bis " />
+                                <TextBlock Text="  to  " />
                                 <xwpft:IntegerUpDown Minimum="2" Maximum="5" Value="{Binding Config.MaxOperands}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
-                                <TextBlock Text="Max. Wert:" />
+                                <TextBlock Text="Max. Value:   " />
                                 <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.MaxValue}" Width="50" />
-                                <TextBlock Text=", Max. Ergebnis:" />
-                                <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.MaxResult}" Width="50" />
+                                <!--<TextBlock Text=", Max. Ergebnis:" />
+                                <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.MaxResult}" Width="50" />-->
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -88,4 +87,5 @@
             </Grid>
         </Grid>
     </Grid>
+    </Border>
 </m:MetroWindow>

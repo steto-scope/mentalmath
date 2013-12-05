@@ -65,7 +65,20 @@ namespace mentalmath
 
         void exprgen_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = factory.Generate();
+            bool failed;
+            do
+            {
+                failed = false;
+                try
+                {
+                    e.Result = factory.Generate();
+                }
+                catch
+                {
+                    failed = true;
+                }
+            }
+            while (failed);
         }
 
         private ICommand enterSolution;

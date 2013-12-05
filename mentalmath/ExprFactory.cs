@@ -89,9 +89,20 @@ namespace mentalmath
 
         public Operator RandomOperator(bool canmult)
         {
-            int n = r.Next(4);
-            if (!canmult && n > 1)
-                n -= 2;
+            List<int> ops = new List<int>();
+            if (Config.Plus)
+                ops.Add(0);
+            if (Config.Minus)
+                ops.Add(1);
+            bool nos = ops.Count == 0;
+            if (Config.Multiply && (canmult||nos))
+                ops.Add(2);
+            if (Config.Divide && (canmult || nos))
+                ops.Add(3);
+
+            int n = ops[r.Next(ops.Count)];
+           /* if (!canmult && n > 1)
+                n -= 2;*/
             switch(n)
             {
                 case 1:
