@@ -10,10 +10,16 @@ using System.Windows.Input;
 
 namespace mentalmath
 {
+    /// <summary>
+    /// ViewModel for the Main Window
+    /// </summary>
     class MainViewModel : ViewModelBase
     {
         private Expr current;
 
+        /// <summary>
+        /// The current Expression (visible on screen)
+        /// </summary>
         public Expr CurrentExpression
         {
             get { return current; }
@@ -21,13 +27,18 @@ namespace mentalmath
         }
 
         private Expr nextExpression;
-
+        /// <summary>
+        /// The following expression (after CurrentExpression has been answered)
+        /// </summary>
         public Expr NextExpression
         {
             get { return nextExpression; }
             set { nextExpression = value; }
         }
 
+        /// <summary>
+        /// The Backgroundworker that generates the next expression
+        /// </summary>
         private BackgroundWorker exprgen;
 
         public MainViewModel()
@@ -38,7 +49,9 @@ namespace mentalmath
         }
 
         private ExprFactory factory;
-
+        /// <summary>
+        /// Resets the Program
+        /// </summary>
         public void Reset()
         {
             Config = new Configs();
@@ -50,14 +63,20 @@ namespace mentalmath
         }
 
         private Configs config;
-
+        /// <summary>
+        /// The Configuration used for Expression Generation
+        /// </summary>
         public Configs Config
         {
             get { return config; }
             set { config = value; }
         }
 
-
+        /// <summary>
+        /// Updates NextExpression
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void exprgen_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             NextExpression = (Expr)e.Result;
@@ -82,7 +101,7 @@ namespace mentalmath
         }
 
         private ICommand enterSolution;
-
+       
         public RelayCommand EnterSolutionCommand
         {
             get
@@ -93,6 +112,9 @@ namespace mentalmath
             }
         }
 
+        /// <summary>
+        /// The command executed by pressing enter 
+        /// </summary>
         public bool EnterSolution()
         {
             decimal d = 0;
@@ -134,7 +156,9 @@ namespace mentalmath
                 return new GridLength(0);
             }
         }
-
+        /// <summary>
+        /// Displays next Expression
+        /// </summary>
         private void ShowNext()
         {
             UserInput = "";
@@ -143,7 +167,9 @@ namespace mentalmath
         }
 
         private string userInput;
-
+        /// <summary>
+        /// Input of the User
+        /// </summary>
         public string UserInput
         {
             get { return userInput; }
@@ -152,6 +178,9 @@ namespace mentalmath
 
         private int numcorrect;
 
+        /// <summary>
+        /// Number of correctly answered equations
+        /// </summary>
         public int NumCorrect
         {
             get { return numcorrect; }
@@ -159,13 +188,17 @@ namespace mentalmath
         }
 
         private int numincorrect;
-
+        /// <summary>
+        /// Number of incorrectly answered equations
+        /// </summary>
         public int NumIncorrect
         {
             get { return numincorrect; }
             set { numincorrect = value; Raise("NumCorrect"); Raise("NumCorrectPercent"); Raise("NumIncorrect"); Raise("NumIncorrectPercent"); Raise("IncorrectLength"); Raise("CorrectLength"); }
         }
-
+        /// <summary>
+        /// NumIncorrect in percentage
+        /// </summary>
         public string NumIncorrectPercent
         {
             get
@@ -173,6 +206,9 @@ namespace mentalmath
                 return Math.Round((double)NumIncorrect / (double)(NumCorrect + NumIncorrect),2)*100 + "%";
             }
         }
+        /// <summary>
+        /// NumCorrect in percentage
+        /// </summary>
         public string NumCorrectPercent
         {
             get
@@ -182,7 +218,9 @@ namespace mentalmath
         }
 
         private Stopwatch watch;
-
+        /// <summary>
+        /// The Stopwatch
+        /// </summary>
         public Stopwatch Watch
         {
             get { return watch; }

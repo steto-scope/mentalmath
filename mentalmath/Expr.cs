@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace mentalmath
 {
+    /// <summary>
+    /// Class the represents an mathematical expression
+    /// </summary>
     class Expr
     {
         private Expr a;
-
+        /// <summary>
+        /// First Operand
+        /// </summary>
         public Expr A
         {
             get { return a; }
@@ -17,7 +22,9 @@ namespace mentalmath
         }
 
         private Expr b;
-
+        /// <summary>
+        /// Second Operand
+        /// </summary>
         public Expr B
         {
             get { return b; }
@@ -25,13 +32,18 @@ namespace mentalmath
         }
 
         private Operator op;
-
+        /// <summary>
+        /// The Operator of this Expression
+        /// </summary>
         public Operator Operator
         {
             get { return op; }
             set { op = value; }
         }
 
+        /// <summary>
+        /// Determines if this Object is an actual number
+        /// </summary>
         public virtual bool IsValue
         {
             get
@@ -42,6 +54,9 @@ namespace mentalmath
 
         private bool bracea;
 
+        /// <summary>
+        /// Determines if A have to be shown with a brace
+        /// </summary>
         public bool BraceA
         {
             get { return bracea && !a.IsValue; }
@@ -49,13 +64,19 @@ namespace mentalmath
         }
 
         private bool braceb;
-
+        /// <summary>
+        /// Determines if B have to be shown with a brace
+        /// </summary>
         public bool BraceB
         {
             get { return braceb && !b.IsValue; }
             set { braceb = value; }
         }
 
+        /// <summary>
+        /// Solves the equation
+        /// </summary>
+        /// <returns></returns>
         public virtual decimal Solve()
         {
             decimal a = A.Solve();
@@ -83,7 +104,10 @@ namespace mentalmath
             return result;
         }
 
-
+        /// <summary>
+        /// Builts the visual representation of the expression
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -115,7 +139,12 @@ namespace mentalmath
             return sb.ToString();
         }
 
-        public static char OperatorToChar(Operator o)
+        /// <summary>
+        /// Gets the visual representation for an Operator
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        private static char OperatorToChar(Operator o)
         {
             switch(o)
             {
@@ -124,7 +153,7 @@ namespace mentalmath
                 case Operator.Multiply:
                     return 'x';
                 case Operator.Divide:
-                    return ':';
+                    return '÷';
                 case Operator.Plus:
                 default:
                     return '+';

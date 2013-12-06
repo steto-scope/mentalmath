@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace mentalmath
 {
+    /// <summary>
+    /// The mathematical operators
+    /// </summary>
     public enum Operator
     {
-        Plus, Minus, Multiply, Divide, Root
-
-        
+        Plus, Minus, Multiply, Divide, Root        
     }
 }

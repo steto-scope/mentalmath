@@ -35,28 +35,27 @@ namespace mentalmath
                 ((MainViewModel)DataContext).Reset();
                 input.Focus();
                 Keyboard.Focus(input);
-                
             }
         }
 
         private void input_KeyDown(object sender, KeyEventArgs e)
         {
+            //exit
             if (e.Key.Equals(Key.Escape))
                 Close();
 
-            // if user didn't press Enter, do nothing
-            if (!e.Key.Equals(Key.Enter)) return;
 
-            // execute the command, if it exists
-            if (DataContext != null)
+            //executes the validation and shows the result
+            if (e.Key.Equals(Key.Enter) && DataContext != null)
             {
                 bool res = ((MainViewModel)DataContext).EnterSolutionCommand.Execute(null);
                 Storyboard s;
-                if(res)
+                if (res)
                     s = (Storyboard)TryFindResource("sok");
                 else
                     s = (Storyboard)TryFindResource("snok");
                 s.Begin();
+                
             }
         }
 
