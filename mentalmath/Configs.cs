@@ -18,40 +18,78 @@ namespace mentalmath
         }
 
         private bool plus;
-
+        /// <summary>
+        /// Plus Operator is allowed
+        /// </summary>
         public bool Plus
         {
             get { return plus; }
-            set { plus = value; Raise("Plus"); }
+            set
+            {
+                if (Divide || Multiply || Minus || value)
+                {
+                    plus = value;
+                    Raise("Plus");
+                }
+            }
         }
 
         private bool minus;
-
+        /// <summary>
+        /// Minus-Operator is allowed
+        /// </summary>
         public bool Minus
         {
             get { return minus; }
-            set { minus = value; Raise("Minus"); }
+            set
+            {
+                if (Plus || Multiply || Divide || value)
+                { 
+                    minus = value;
+                    Raise("Minus"); 
+                }
+            }
         }
 
         private bool multiply;
-
+        /// <summary>
+        /// Multiply-Operator is allowed
+        /// </summary>
         public bool Multiply
         {
             get { return multiply; }
-            set { multiply = value; Raise("Multiply"); }
+            set 
+            {
+                if (Plus || Divide || Minus || value)
+                { 
+                    multiply = value;
+                    Raise("Multiply");
+                }
+            }
         }
 
         private bool divide;
-
+        /// <summary>
+        /// Division-Operator is allowed
+        /// </summary>
         public bool Divide
         {
             get { return divide; }
-            set { divide = value; Raise("Divide"); }
+            set
+            {
+                if (Plus || Multiply || Minus || value)
+                {
+                    divide = value; 
+                    Raise("Divide"); 
+                }
+            }
         }
 
 
         private bool root;
-
+        /// <summary>
+        /// Root-Operator is allowed. Not used yet.
+        /// </summary>
         public bool Root
         {
             get { return root; }
@@ -59,7 +97,9 @@ namespace mentalmath
         }
 
         private decimal maxvalue;
-
+        /// <summary>
+        /// Maximum Operand Value
+        /// </summary>
         public decimal MaxValue
         {
             get { return maxvalue; }
@@ -67,7 +107,9 @@ namespace mentalmath
         }
 
         private int allowedDecimalPlaces;
-
+        /// <summary>
+        /// Number of decimal places in Operands or Results. Not used yet.
+        /// </summary>
         public int AllowedDecimalPlaces
         {
             get { return  allowedDecimalPlaces; }
@@ -75,7 +117,9 @@ namespace mentalmath
         }
 
         private int minOperands;
-
+        /// <summary>
+        /// Minimum number of Operands. 
+        /// </summary>
         public int MinOperands
         {
             get { return minOperands; }
@@ -90,7 +134,9 @@ namespace mentalmath
         }
 
         private int maxOperands;
-
+        /// <summary>
+        /// Maximim number of Operands. 
+        /// </summary>
         public int MaxOperands
         {
             get { return maxOperands; }
@@ -103,7 +149,9 @@ namespace mentalmath
         }
 
         private int maxLayers;
-
+        /// <summary>
+        /// Maximum depth of Equations. Not used yet.
+        /// </summary>
         public int MaxLayers
         {
             get { return maxLayers; }
@@ -111,7 +159,9 @@ namespace mentalmath
         }
 
         private decimal maxresult;
-
+        /// <summary>
+        /// Maximum of the Result. Not used yet.
+        /// </summary>
         public decimal MaxResult
         {
             get { return maxresult; }
@@ -119,7 +169,9 @@ namespace mentalmath
         }
 
         private int countdown;
-
+        /// <summary>
+        /// Number of seconds for the countdown
+        /// </summary>
         public int Countdown
         {
             get { return countdown; }
