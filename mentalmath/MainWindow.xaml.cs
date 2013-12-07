@@ -32,10 +32,20 @@ namespace mentalmath
         {
             if (DataContext != null)
             {
-                ((MainViewModel)DataContext).Reset();
+                ((MainViewModel)DataContext).SolutionEntered += MainWindow_SolutionEntered;
                 input.Focus();
                 Keyboard.Focus(input);
             }
+        }
+
+        void MainWindow_SolutionEntered(object sender, SolutionEnteredEventArgs e)
+        {
+            Storyboard s;
+            if (e.Correct)
+                s = (Storyboard)TryFindResource("sok");
+            else
+                s = (Storyboard)TryFindResource("snok");
+            s.Begin();
         }
 
         private void input_KeyDown(object sender, KeyEventArgs e)
@@ -44,21 +54,20 @@ namespace mentalmath
             if (e.Key.Equals(Key.Escape))
                 Close();
 
+            if (e.Key.Equals(Key.Multiply) && DataContext != null)
+            {
+                ((MainViewModel)DataContext).StartStopCountdownCommand.Execute(null);
+                e.Handled = true;
+
+            }
 
             //executes the validation and shows the result
             if (e.Key.Equals(Key.Enter) && DataContext != null)
             {
-                bool res = ((MainViewModel)DataContext).EnterSolutionCommand.Execute(null);
-                Storyboard s;
-                if (res)
-                    s = (Storyboard)TryFindResource("sok");
-                else
-                    s = (Storyboard)TryFindResource("snok");
-                s.Begin();
-                
+               ((MainViewModel)DataContext).EnterSolutionCommand.Execute(null);
             }
         }
-
+        
 
     }
 }

@@ -12,7 +12,7 @@ namespace mentalmath
 
         #region private fields
 
-        private readonly Func<bool> execute;
+        private readonly Action execute;
 
         private readonly Func<bool> canExecute;
 
@@ -57,7 +57,7 @@ namespace mentalmath
 
         /// <param name="execute">The execution logic.</param>
 
-        public RelayCommand(Func<bool> execute)
+        public RelayCommand(Action execute)
 
             : this(execute, null)
         {
@@ -76,7 +76,7 @@ namespace mentalmath
 
         /// <param name="canExecute">The execution status logic.</param>
 
-        public RelayCommand(Func<bool> execute, Func<bool> canExecute)
+        public RelayCommand(Action execute, Func<bool> canExecute)
         {
 
             if (execute == null)
@@ -93,10 +93,10 @@ namespace mentalmath
 
 
 
-        public bool Execute(object parameter)
+        public void Execute(object parameter)
         {
 
-            return this.execute();
+            this.execute();
 
         }
 

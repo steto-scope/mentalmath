@@ -36,16 +36,20 @@ namespace mentalmath
             set { nextExpression = value; }
         }
 
-        /// <summary>
-        /// The Backgroundworker that generates the next expression
-        /// </summary>
-        private BackgroundWorker exprgen;
-
+       
         public MainViewModel()
         {
-            exprgen = new BackgroundWorker();
-            exprgen.DoWork += exprgen_DoWork;
-            exprgen.RunWorkerCompleted += exprgen_RunWorkerCompleted;
+            Reset();
+            
+            Countdown = new CountdownTimer(new TimeSpan(0,0,(int)Config.Countdown), ReportInterval.HundredthSecond);
+            Countdown.RepeatForever = true;
+            Countdown.CountdownAccomplished += Countdown_CountdownAccomplished;
+          
+        }
+
+        void Countdown_CountdownAccomplished(object sender, EventArgs e)
+        {
+            EnterSolutionCommand.Execute(null);
         }
 
         private ExprFactory factory;
@@ -59,6 +63,9 @@ namespace mentalmath
             CurrentExpression = factory.Generate();
             NumCorrect = 0;
             NumIncorrect = 0;
+            exprgen = new BackgroundWorker();
+            exprgen.DoWork += exprgen_DoWork;
+            exprgen.RunWorkerCompleted += exprgen_RunWorkerCompleted;
             exprgen.RunWorkerAsync();
         }
 
@@ -73,6 +80,12 @@ namespace mentalmath
         }
 
         /// <summary>
+        /// The Backgroundworker that generates the next expression
+        /// </summary>
+        private BackgroundWorker exprgen;
+
+
+        /// <summary>
         /// Updates NextExpression
         /// </summary>
         /// <param name="sender"></param>
@@ -82,6 +95,11 @@ namespace mentalmath
             NextExpression = (Expr)e.Result;
         }
 
+        /// <summary>
+        /// Implementation for Worker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void exprgen_DoWork(object sender, DoWorkEventArgs e)
         {
             bool failed;
@@ -100,6 +118,8 @@ namespace mentalmath
             while (failed);
         }
 
+        #region Commands
+
         private ICommand enterSolution;
        
         public RelayCommand EnterSolutionCommand
@@ -107,15 +127,15 @@ namespace mentalmath
             get
             {
                 if (enterSolution == null)
-                    enterSolution = new RelayCommand(new Func<bool>(EnterSolution));
+                    enterSolution = new RelayCommand(new Action(EnterSolution));
                 return (RelayCommand)enterSolution;
             }
         }
-
+                
         /// <summary>
         /// The command executed by pressing enter 
         /// </summary>
-        public bool EnterSolution()
+        public void EnterSolution()
         {
             decimal d = 0;
             bool erg = decimal.TryParse(UserInput, out d);
@@ -129,9 +149,57 @@ namespace mentalmath
                 NumIncorrect++;
 
             ShowNext();
-            return result;
+
+            if (SolutionEntered != null)
+                SolutionEntered(this, new SolutionEnteredEventArgs() { Correct = result });
         }
 
+
+
+        private ICommand startstopcountdown;
+
+        public RelayCommand StartStopCountdownCommand
+        {
+            get
+            {
+                if (startstopcountdown == null)
+                    startstopcountdown = new RelayCommand(new Action(StartStopCountdown));
+                return (RelayCommand)startstopcountdown;
+            }
+        }
+
+        public void StartStopCountdown()
+        {
+            if (Countdown.IsRunning)
+            {
+                Countdown.Stop();
+                Countdown.Interval = new TimeSpan(0, 0, Config.Countdown);
+            }
+            else
+            {
+                Countdown.Start();
+                Raise("CountdownTotal");
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Wrapper for Countdown.Interval.TotalMilleseconds to enable Notifications
+        /// </summary>
+        public int CountdownTotal
+        {
+            get
+            {
+                return (int)Countdown.Interval.TotalMilliseconds;
+            }
+        }
+
+        public event EventHandler<SolutionEnteredEventArgs> SolutionEntered;
+
+        /// <summary>
+        /// NumCorrect to GridLength
+        /// </summary>
         public GridLength CorrectLength
         {
             get 
@@ -144,6 +212,10 @@ namespace mentalmath
                 return new GridLength(1,GridUnitType.Star);
             }
         }
+
+        /// <summary>
+        /// NumIncorrect to GridLength
+        /// </summary>
         public GridLength IncorrectLength
         {
             get
@@ -161,6 +233,11 @@ namespace mentalmath
         /// </summary>
         private void ShowNext()
         {
+            if(Countdown.IsRunning)
+            {
+                Countdown.Stop();
+                Countdown.Start();
+            }
             UserInput = "";
             CurrentExpression = NextExpression;
             exprgen.RunWorkerAsync();
@@ -217,17 +294,29 @@ namespace mentalmath
             }
         }
 
-        private Stopwatch watch;
+        private CountdownTimer countdown;
         /// <summary>
         /// The Stopwatch
         /// </summary>
-        public Stopwatch Watch
+        public CountdownTimer Countdown
         {
-            get { return watch; }
-            set { watch = value; }
+            get { return countdown; }
+            private set { countdown = value; }
         }
 
 
+
+    }
+
+    public class SolutionEnteredEventArgs : EventArgs
+    {
+        private bool correct;
+
+        public bool Correct
+        {
+            get { return correct; }
+            set { correct = value; }
+        }
 
     }
 }

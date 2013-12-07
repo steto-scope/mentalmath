@@ -118,6 +118,14 @@ namespace mentalmath
             set { maxresult = value; Raise("MaxResult"); }
         }
 
+        private int countdown;
+
+        public int Countdown
+        {
+            get { return countdown; }
+            set { countdown = value; Raise("Countdown"); }
+        }
+        
 
         public Configs()
         {
@@ -132,6 +140,7 @@ namespace mentalmath
             Minus = true;
             Multiply = true;
             Divide = true;
+            Countdown = 10;
         }
 
 
