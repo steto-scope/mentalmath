@@ -47,6 +47,11 @@ namespace mentalmath
           
         }
 
+        /// <summary>
+        /// Triggers the EnterSolution-Comnmand if the countdown reaches zero.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void Countdown_CountdownAccomplished(object sender, EventArgs e)
         {
             EnterSolutionCommand.Execute(null);
@@ -59,6 +64,7 @@ namespace mentalmath
         public void Reset()
         {
             Config = new Configs();
+            Config.PropertyChanged += Config_PropertyChanged;
             factory = new ExprFactory(Config);
             CurrentExpression = factory.Generate();
             NumCorrect = 0;
@@ -67,6 +73,28 @@ namespace mentalmath
             exprgen.DoWork += exprgen_DoWork;
             exprgen.RunWorkerCompleted += exprgen_RunWorkerCompleted;
             exprgen.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Calculates new NextExpression if user changes Config (expression generation related stuff)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Config_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "Plus":
+                case "Minus":   
+                case "Multiply":
+                case "Divide":
+                case "MaxValue":
+                case "MinOperands":
+                case "MaxOperands":
+                    if (!exprgen.IsBusy)
+                        exprgen.RunWorkerAsync();
+                    break;
+            }
         }
 
         private Configs config;
