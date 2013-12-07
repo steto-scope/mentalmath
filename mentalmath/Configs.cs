@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace mentalmath
 {
-    class Configs : INotifyPropertyChanged
+    public class Configs : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -193,6 +195,42 @@ namespace mentalmath
             Multiply = true;
             Divide = true;
             Countdown = 10;
+        }
+
+
+        public void Save()
+        {
+            try
+            {
+                XmlSerializer s = new XmlSerializer(this.GetType());
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/"))
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/");
+                FileStream fs = File.OpenWrite(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml");
+                s.Serialize(fs, this);
+                fs.Close();
+            }
+            catch //catch possible write-protection. in this case do not save configs
+            {
+            }
+        }
+
+        public static Configs Load()
+        {
+            try
+            {
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml"))
+                {
+                    FileStream fs = File.OpenRead(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml");
+                    XmlSerializer s = new XmlSerializer(typeof(Configs));
+                    Configs conf = (Configs)s.Deserialize(fs);
+                    fs.Close();
+                    return conf;
+                }
+            }
+            catch
+            {
+            }
+            return new Configs(); //no or invalid savefile? return defaults
         }
 
 

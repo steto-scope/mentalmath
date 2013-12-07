@@ -63,7 +63,7 @@ namespace mentalmath
         /// </summary>
         public void Reset()
         {
-            Config = new Configs();
+            Config = Configs.Load();
             Config.PropertyChanged += Config_PropertyChanged;
             factory = new ExprFactory(Config);
             CurrentExpression = factory.Generate();
@@ -93,6 +93,7 @@ namespace mentalmath
                 case "MaxOperands":
                     if (!exprgen.IsBusy)
                         exprgen.RunWorkerAsync();
+                    Config.Save();
                     break;
             }
         }
