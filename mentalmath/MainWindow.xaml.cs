@@ -38,6 +38,11 @@ namespace mentalmath
             }
         }
 
+        /// <summary>
+        /// Shows Effect, if a solution has been sent
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void MainWindow_SolutionEntered(object sender, SolutionEnteredEventArgs e)
         {
             Storyboard s;
@@ -54,6 +59,7 @@ namespace mentalmath
             if (e.Key.Equals(Key.Escape))
                 Close();
 
+            //start or stop countdown
             if (e.Key.Equals(Key.Multiply) && DataContext != null)
             {
                 ((MainViewModel)DataContext).StartStopCountdownCommand.Execute(null);
