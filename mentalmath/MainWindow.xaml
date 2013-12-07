@@ -3,7 +3,7 @@
         xmlns:s="clr-namespace:mentalmath"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xwpft="http://schemas.xceed.com/wpf/xaml/toolkit" Icon="mentalmath-logo.png"
-        xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Background="White" SizeToContent="WidthAndHeight"
+        xmlns:m="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" Background="White" SizeToContent="WidthAndHeight" KeyDown="input_KeyDown"
         Title="mentalmath" ResizeMode="NoResize" DataContextChanged="Window_DataContextChanged">
     <Window.Resources>
         <Storyboard x:Key="sok" >
@@ -24,7 +24,7 @@
                     <RowDefinition Height="*" />
             </Grid.RowDefinitions>
                 <ProgressBar Maximum="{Binding CountdownTotal}" Value="{Binding Countdown.RemainingMilliseconds, Mode=OneWay}" Grid.Row="0" Visibility="{Binding Countdown.IsRunning,Converter={StaticResource b2vc}}" />
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="1" Visibility="{Binding HasAnswers,Converter={StaticResource b2vc}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="{Binding CorrectLength}" />
                     <ColumnDefinition Width="{Binding IncorrectLength}" />

@@ -68,7 +68,7 @@ namespace mentalmath
             }
 
             //executes the validation and shows the result
-            if (e.Key.Equals(Key.Enter) && DataContext != null)
+            if (e.Key.Equals(Key.Enter) && DataContext != null && sender is TextBox)
             {
                ((MainViewModel)DataContext).EnterSolutionCommand.Execute(null);
             }

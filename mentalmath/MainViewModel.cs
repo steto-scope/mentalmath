@@ -240,7 +240,8 @@ namespace mentalmath
             }
             UserInput = "";
             CurrentExpression = NextExpression;
-            exprgen.RunWorkerAsync();
+            if(!exprgen.IsBusy)
+                exprgen.RunWorkerAsync();
         }
 
         private string userInput;
@@ -261,7 +262,18 @@ namespace mentalmath
         public int NumCorrect
         {
             get { return numcorrect; }
-            set { numcorrect = value; Raise("NumCorrect"); Raise("NumCorrectPercent"); Raise("NumIncorrect"); Raise("NumIncorrectPercent"); Raise("IncorrectLength"); Raise("CorrectLength"); }
+            set { numcorrect = value; Raise("NumCorrect"); Raise("HasAnswers"); Raise("NumCorrectPercent"); Raise("NumIncorrect"); Raise("NumIncorrectPercent"); Raise("IncorrectLength"); Raise("CorrectLength"); }
+        }
+
+        /// <summary>
+        /// Checks if user has made answers
+        /// </summary>
+        public bool HasAnswers
+        {
+            get
+            {
+                return (NumCorrect + NumIncorrect) > 0;
+            }
         }
 
         private int numincorrect;
@@ -271,7 +283,7 @@ namespace mentalmath
         public int NumIncorrect
         {
             get { return numincorrect; }
-            set { numincorrect = value; Raise("NumCorrect"); Raise("NumCorrectPercent"); Raise("NumIncorrect"); Raise("NumIncorrectPercent"); Raise("IncorrectLength"); Raise("CorrectLength"); }
+            set { numincorrect = value; Raise("NumCorrect"); Raise("HasAnswers"); Raise("NumCorrectPercent"); Raise("NumIncorrect"); Raise("NumIncorrectPercent"); Raise("IncorrectLength"); Raise("CorrectLength"); }
         }
         /// <summary>
         /// NumIncorrect in percentage
