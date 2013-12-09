@@ -77,10 +77,10 @@
                             <CheckBox Content="÷" IsChecked="{Binding Config.Divide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                             <StackPanel Margin="10" Orientation="Horizontal">
-                                <TextBlock Text="Operands:   " />
-                                <xwpft:IntegerUpDown Minimum="2" Maximum="5" Value="{Binding Config.MinOperands}" />
+                                <TextBlock Text="Operations:   " />
+                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.MinOperators}" />
                                 <TextBlock Text="  to  "  />
-                                <xwpft:IntegerUpDown Minimum="2" Maximum="5" Value="{Binding Config.MaxOperands}" />
+                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.MaxOperators}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Text="Max. Value:   " />

@@ -118,48 +118,7 @@ namespace mentalmath
             set { allowedDecimalPlaces = value; Raise("AllowedDecimalPlaces"); }
         }
 
-        private int minOperands;
-        /// <summary>
-        /// Minimum number of Operands. 
-        /// </summary>
-        public int MinOperands
-        {
-            get { return minOperands; }
-            set 
-            { 
-                minOperands = value; 
-                if (maxOperands < value) 
-                    maxOperands = value;
-
-                Raise("MinOperands");
-                Raise("MaxOperands"); }
-        }
-
-        private int maxOperands;
-        /// <summary>
-        /// Maximim number of Operands. 
-        /// </summary>
-        public int MaxOperands
-        {
-            get { return maxOperands; }
-            set {
-                maxOperands = value;
-                if (minOperands > value)
-                    minOperands = value;
-
-                Raise("MinOperands"); Raise("MaxOperands"); }
-        }
-
-        private int maxLayers;
-        /// <summary>
-        /// Maximum depth of Equations. Not used yet.
-        /// </summary>
-        public int MaxLayers
-        {
-            get { return maxLayers; }
-            set { maxLayers = value; Raise("MaxLayers"); }
-        }
-
+       
         private decimal maxresult;
         /// <summary>
         /// Maximum of the Result. Not used yet.
@@ -179,13 +138,40 @@ namespace mentalmath
             get { return countdown; }
             set { countdown = value; Raise("Countdown"); }
         }
-        
+
+        private int minoperators;
+
+        public int MinOperators
+        {
+            get { return minoperators; }
+            set
+            {
+                minoperators = value;
+                if (maxoperators < value)
+                    maxoperators = value;
+
+                Raise("MinOperators"); Raise("MaxOperators"); 
+            }
+        }
+
+        private int maxoperators;
+
+        public int MaxOperators
+        {
+            get { return maxoperators; }
+            set
+            {
+                maxoperators = value;
+                if (minoperators > value)
+                    minoperators = value;
+
+                Raise("MinOperators"); Raise("MaxOperators");
+            }
+        }
+
 
         public Configs()
         {
-            MaxLayers = 1;
-            MaxOperands = 2;
-            MinOperands = 2;
             AllowedDecimalPlaces = 0;
             MaxResult = 999;
             MaxValue = 500;
@@ -195,6 +181,8 @@ namespace mentalmath
             Multiply = true;
             Divide = true;
             Countdown = 10;
+            MinOperators = 1;
+            MaxOperators = 1;
         }
 
 

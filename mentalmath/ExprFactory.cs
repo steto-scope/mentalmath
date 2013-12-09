@@ -41,7 +41,7 @@ namespace mentalmath
             if (Config == null)
                 return null;
 
-            return Generate(r.Next(Config.MaxOperands+1 - Config.MinOperands) + Config.MinOperands);
+            return Generate(r.Next(Config.MaxOperators - Config.MinOperators) + Config.MinOperators,(int)Config.MaxResult,1);
         }
 
         /// <summary>
@@ -49,49 +49,63 @@ namespace mentalmath
         /// </summary>
         /// <param name="layer">The number of Operands to be in this Expression and Subexpressions</param>
         /// <returns></returns>
-        private Expr Generate(int layer)
+        private Expr Generate(int layer, int maximum, decimal factorof)
         {
             Expr e =  new Expr();
-            
+            int submax = r.Next(maximum);
+
+           Expr a = null;
+            Expr b = null;
+            Expr temp = null;
+
+           do
+            {              
             //if there are 4 or more Operands to create, both A and B are Subexpressions 
-            if (layer >= 4)
+            if (layer >= 3)
             {
+               
+                layer--;
                 int sublayer = Math.Abs(layer / 2); //split the number of operands for balanced Expression tree
-                e.A = Generate(sublayer);
-                e.B = Generate(layer - sublayer);
-                e.Operator = Operator.Plus; //use Plus, Multiplay would cause extremly high numbers, for Division the B-Part has to be divider of A
+                e.Operator = RandomOperator();
+                e.A = Generate(sublayer,submax,1);
+                e.B = Generate(layer - sublayer,maximum-submax, e.Operator == Operator.Divide ? e.A.Solve() : 1);
+                //e.Operator = Operator.Plus; //use Plus, Multiplay would cause extremly high numbers, for Division the B-Part has to be divider of A
             }
             else 
             {
                 e.Operator = RandomOperator();
-                if (layer > 2) //if there are more than 2 Operands (3) one of A or B have to be a subexpression
+                if (layer > 1) //if there are more than 2 Operands (3) one of A or B have to be a subexpression
                 {
-                    if (r.Next(1) == 1)
-                        e.B = Generate(--layer);
-                    else
-                        e.A = Generate(--layer);
+                    //if (r.Next(1) == 1)
+                    //    e.B = Generate(--layer,submax,e.Operator== Operator.Divide ? );
+                    //else
+                        e.A = Generate(--layer,submax,1);
+                    
                 }
             }
 
+           
+
+           
             //now fill the leafs of the expression-tree with numbers
             if (e.A == null)
             {
                 switch(e.Operator)
                 {
                     case Operator.Multiply: //not higher than the square-root of the MaxValue
-                        e.A = new ExprValue(r.Next((int)Config.MaxValue/4) + 1);
+                        a = new ExprValue(r.Next(maximum/2) + 1);
                         break;
                     case Operator.Divide: //no prime
                         decimal v=0;
                         do
                         {
-                            v = (int)(r.Next((int)((double)Config.MaxValue - Math.Sqrt((double)Config.MaxValue))) + (decimal)Math.Sqrt((double)Config.MaxValue));
+                            v = (int)(r.Next((int)((double)maximum- Math.Sqrt((double)maximum))) + (decimal)Math.Sqrt((double)maximum));
                         } 
                         while (IsPrime((int)v));
-                        e.A = new ExprValue(v);
+                        a = new ExprValue(v);
                         break;
                     default:
-                        e.A = new ExprValue(r.Next((int)Config.MaxValue-1)+1);
+                        a = new ExprValue(r.Next((int)maximum-1)+1);
                         break;
                 }
                     
@@ -101,23 +115,33 @@ namespace mentalmath
                 switch(e.Operator)
                 {
                     case Operator.Multiply: //not higher than squre-root of A
-                        e.B = new ExprValue(r.Next((int)e.A.Solve()/4) + 1);
+                        b = new ExprValue(r.Next((maximum-submax)/2) + 1);
                         break;
                     case Operator.Minus: //not below 0
-                        e.B = new ExprValue(r.Next((int)e.A.Solve() - 1) + 1);
+                        b = new ExprValue(r.Next((int)(a??e.A).Solve() - 1) + 1);
                         break;
                     case Operator.Divide: //use a divider of A to avoid decimal places or even periodic/irrational results
-                        var factors = CalculateFactors((int)e.A.Solve());
+                        var factors = CalculateFactors((int)(a??e.A).Solve());
                         decimal v=1;
                         if (factors.Count >= 1)
                             v = factors[r.Next(factors.Count)];
-                        e.B = new ExprValue(v);
+                        b = new ExprValue(v);
                         break;
                     default:
-                        e.B = new ExprValue(r.Next((int)Config.MaxValue-1)+1);
+                        b = new ExprValue(r.Next(maximum-submax-1)+1);
                         break;
                 }                    
             }
+            temp = new Expr();
+            temp.A = a ?? e.A;
+            temp.B = b ?? e.B;
+            temp.Operator = e.Operator;
+            Console.WriteLine(temp+" = "+temp.Solve());
+            }
+           while( temp.Solve() % factorof != 0 );
+
+            e.A = a ?? e.A;
+            e.B = b ?? e.B;
 
             //add a brace-information for the output. If a subexpression is a line-operation and the expression is a point-operation the line-operation need to be braced
             if(e.Operator == Operator.Multiply || e.Operator == Operator.Divide)

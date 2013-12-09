@@ -79,8 +79,8 @@ namespace mentalmath
         /// <returns></returns>
         public virtual decimal Solve()
         {
-            decimal a = A.Solve();
-            decimal b = B.Solve();
+            decimal a = A!=null ? A.Solve() : 0;
+            decimal b = B!=null ? B.Solve() : 1;
 
             decimal result = 0;
 
@@ -110,6 +110,9 @@ namespace mentalmath
         /// <returns></returns>
         public override string ToString()
         {
+            if (A == null || B == null)
+                return "";
+
             StringBuilder sb = new StringBuilder();
             if (BraceA)
             {

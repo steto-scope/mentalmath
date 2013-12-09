@@ -89,8 +89,8 @@ namespace mentalmath
                 case "Multiply":
                 case "Divide":
                 case "MaxValue":
-                case "MinOperands":
-                case "MaxOperands":
+                case "MinOperators":
+                case "MaxOperators":
                     if (!exprgen.IsBusy)
                         exprgen.RunWorkerAsync();
                     Config.Save();
@@ -143,8 +143,9 @@ namespace mentalmath
                 {
                     failed = true;
                 }
+                Console.WriteLine(e.Result);
             }
-            while (failed);
+            while (failed || e.Result==null || ((Expr)e.Result).Solve() > Config.MaxResult);
         }
 
         #region Commands
