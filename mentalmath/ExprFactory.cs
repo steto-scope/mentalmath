@@ -41,7 +41,14 @@ namespace mentalmath
             if (Config == null)
                 return null;
 
-            return Generate(r.Next(Config.MaxOperators - Config.MinOperators) + Config.MinOperators,(int)Config.MaxResult,1);
+            List<Operator> operators = new List<Operator>();
+            int numOperators = r.Next(Config.MaxOperators - Config.MinOperators) + Config.MinOperators;
+            for(int i=0; i<numOperators ; i++)
+            {
+                operators.Add(RandomOperator());
+            }
+
+            return Generate(operators, false, (int)Config.MaxResult, null, null);
         }
 
         /// <summary>
@@ -49,110 +56,165 @@ namespace mentalmath
         /// </summary>
         /// <param name="layer">The number of Operands to be in this Expression and Subexpressions</param>
         /// <returns></returns>
-        private Expr Generate(int layer, int maximum, decimal factorof)
+        private Expr Generate(List<Operator> operators, bool notprime,  int maxresult, int? minresult, decimal? factorof)
         {
-            Expr e =  new Expr();
-            int submax = r.Next(maximum);
-
-           Expr a = null;
-            Expr b = null;
-            Expr temp = null;
-
-           do
-            {              
-            //if there are 4 or more Operands to create, both A and B are Subexpressions 
-            if (layer >= 3)
-            {
-               
-                layer--;
-                int sublayer = Math.Abs(layer / 2); //split the number of operands for balanced Expression tree
-                e.Operator = RandomOperator();
-                e.A = Generate(sublayer,submax,1);
-                e.B = Generate(layer - sublayer,maximum-submax, e.Operator == Operator.Divide ? e.A.Solve() : 1);
-                //e.Operator = Operator.Plus; //use Plus, Multiplay would cause extremly high numbers, for Division the B-Part has to be divider of A
-            }
-            else 
-            {
-                e.Operator = RandomOperator();
-                if (layer > 1) //if there are more than 2 Operands (3) one of A or B have to be a subexpression
-                {
-                    //if (r.Next(1) == 1)
-                    //    e.B = Generate(--layer,submax,e.Operator== Operator.Divide ? );
-                    //else
-                        e.A = Generate(--layer,submax,1);
-                    
-                }
-            }
-
-           
-
-           
-            //now fill the leafs of the expression-tree with numbers
-            if (e.A == null)
-            {
-                switch(e.Operator)
-                {
-                    case Operator.Multiply: //not higher than the square-root of the MaxValue
-                        a = new ExprValue(r.Next(maximum/2) + 1);
-                        break;
-                    case Operator.Divide: //no prime
-                        decimal v=0;
-                        do
-                        {
-                            v = (int)(r.Next((int)((double)maximum- Math.Sqrt((double)maximum))) + (decimal)Math.Sqrt((double)maximum));
-                        } 
-                        while (IsPrime((int)v));
-                        a = new ExprValue(v);
-                        break;
-                    default:
-                        a = new ExprValue(r.Next((int)maximum-1)+1);
-                        break;
-                }
-                    
-            }
-            if (e.B == null)
-            {
-                switch(e.Operator)
-                {
-                    case Operator.Multiply: //not higher than squre-root of A
-                        b = new ExprValue(r.Next((maximum-submax)/2) + 1);
-                        break;
-                    case Operator.Minus: //not below 0
-                        b = new ExprValue(r.Next((int)(a??e.A).Solve() - 1) + 1);
-                        break;
-                    case Operator.Divide: //use a divider of A to avoid decimal places or even periodic/irrational results
-                        var factors = CalculateFactors((int)(a??e.A).Solve());
-                        decimal v=1;
-                        if (factors.Count >= 1)
-                            v = factors[r.Next(factors.Count)];
-                        b = new ExprValue(v);
-                        break;
-                    default:
-                        b = new ExprValue(r.Next(maximum-submax-1)+1);
-                        break;
-                }                    
-            }
-            temp = new Expr();
-            temp.A = a ?? e.A;
-            temp.B = b ?? e.B;
-            temp.Operator = e.Operator;
-            Console.WriteLine(temp+" = "+temp.Solve());
-            }
-           while( temp.Solve() % factorof != 0 );
-
-            e.A = a ?? e.A;
-            e.B = b ?? e.B;
-
-            //add a brace-information for the output. If a subexpression is a line-operation and the expression is a point-operation the line-operation need to be braced
-            if(e.Operator == Operator.Multiply || e.Operator == Operator.Divide)
-            {
-                if (e.A.Operator == Operator.Plus || e.A.Operator == Operator.Minus)
-                    e.BraceA = true;
-                if (e.B.Operator == Operator.Plus || e.B.Operator == Operator.Minus)
-                    e.BraceB = true;
-            }
             
+            Expr e = new Expr();
+            e.Operator = operators.First();
+            operators.RemoveAt(0);
+
+            switch(operators.Count)
+            {
+                case 0: //leaf reached, built expression
+                    switch(e.Operator)
+                    {
+                        case Operator.Divide:
+                            if (factorof == null)
+                                e.A = new ExprValue(GenerateNumber(true, 1, maxresult)); //use a random number if it does not have to match with a factor
+                            else
+                                e.A = new ExprValue(GenerateNumber((int)factorof)); //use a random divider of factorof
+                            e.B = new ExprValue(GenerateNumber((int)e.A.Solve()));
+                            break;
+                       case Operator.Minus:
+                            e.A = new ExprValue(GenerateNumber(false,minresult??0,maxresult));
+                            if (factorof == null)
+                            {
+                                e.B = new ExprValue(GenerateNumber(false, 0, (int)e.A.Solve()));
+                            }
+                            else
+                            {
+                                int w = (int)e.A.Solve();
+                                var m = GenerateNumber(false, 1, w); //pick a random number between 0 and maxresult
+                                int closest = CalculateFactors((int)factorof).ClosestTo((int)m); //get the biggest divider of maxresult that is smaller than the generated number
+                                e.B = new ExprValue(closest==0 ? 0 : w-closest); //and use the difference (if the final result is not 0)
+                            }
+                            break;
+                        case Operator.Multiply:
+                            if (factorof == null)
+                            {
+                                e.A = new ExprValue(GenerateNumber(false, 1, (int)Math.Sqrt(maxresult) + 1));
+                                e.B = new ExprValue(GenerateNumber(false, 1, (int)Math.Sqrt(maxresult) + 1));
+                            }
+                            else
+                            {
+                                e.A = new ExprValue(GenerateNumber((int)factorof)); //pick a random divider of factorof
+                                e.B = new ExprValue(factorof.Value / e.A.Solve()); //use the division, so that factorof is dividable by A*B 
+                            }
+                            break;
+                        default:
+                            if (factorof == null)
+                            {
+                                e.A = new ExprValue(GenerateNumber(false, minresult ?? 0, maxresult / 2));
+                                e.B = new ExprValue(GenerateNumber(false, minresult ?? 0, maxresult / 2));
+                            }
+                            else
+                            {
+                                List<int> factors = CalculateFactors((int)factorof);
+                                int num = factors[r.Next(factors.Count)];
+                                e.A = new ExprValue(GenerateNumber(false,0,num));
+                                e.B = new ExprValue(factorof.Value - e.A.Solve());
+                            }
+                            break;
+                    }
+                    break;
+
+                case 1: 
+                    switch(e.Operator)
+                    {
+                        case Operator.Divide:
+                            e.A = Generate(operators, true, maxresult, 1, factorof);
+                            e.B = new ExprValue(GenerateNumber((int)e.A.Solve()));
+                            break;
+                        case Operator.Multiply:
+                            e.A = Generate(operators, false, (int)Math.Sqrt(maxresult)+1, null, factorof);
+                            e.B = new ExprValue(GenerateNumber(false,0,(int)Math.Sqrt(maxresult)+1));
+                            break;
+                        case Operator.Minus:
+                            e.A = Generate(operators, false, maxresult, null, factorof);
+                            e.B = new ExprValue(GenerateNumber(false,0,(int)e.A.Solve()));
+                            break;
+                        default:
+                            e.A = Generate(operators, false, maxresult/2, null, factorof);
+                            e.B = new ExprValue(GenerateNumber(false,0,maxresult/2));
+                            break;
+                    }
+
+                    break;
+
+                case 2:
+                default:
+                    List<Operator> a = operators.Take((int)operators.Count / 2).ToList();
+                    List<Operator> b = operators.Skip(a.Count).ToList();
+                    Console.WriteLine(a.Count + ":" + ", " + b.Count + ":" );
+                    switch(e.Operator)
+                    {
+                        case Operator.Divide:
+                            e.A = Generate(a, true,  maxresult, minresult, factorof); //should not be a prime, this is boring
+                            e.B = Generate(b, false, (int)e.A.Solve(), minresult, e.A.Solve()); //has to be a factor of A
+                            break;
+                        case Operator.Minus:
+                            e.A = Generate(a, false, maxresult, minresult, factorof);
+                            e.B = Generate(b, false, (int)e.A.Solve(), null, factorof);
+                            break;
+                        case Operator.Multiply:
+                            e.A = Generate(a, true, (int)Math.Sqrt(maxresult) + 1, minresult, factorof);
+                            e.B = Generate(b, true, (int)Math.Sqrt(maxresult) + 1, minresult, factorof);
+                            break;
+                        case Operator.Plus:
+                            e.A = Generate(a, true, maxresult/2, minresult, factorof);
+                            e.B = Generate(b, true, maxresult/2, minresult, factorof);
+                            break;
+                    }
+
+                    
+
+                    break;
+            }
+
             return e;
+        }
+
+        /// <summary>
+        /// Generates a random number by specified requirements
+        /// </summary>
+        /// <param name="notprime">true, if the number should not be a prime</param>
+        /// <param name="positive">true, if only positive numbers allowed (not used yet)</param>
+        /// <param name="min">Minimum range [0,max]. Absolute value</param>
+        /// <param name="max">Maximum range [min,). Absolute value</param>
+        /// <returns></returns>
+        public decimal GenerateNumber(bool notprime,  int min, int max)
+        {
+            if (min < 0 || max < 0)
+                throw new Exception("min and max have to be positive");
+            if (min > max)
+                throw new Exception("min has to be smaller than max");
+
+            if (min - max == 0) //special case
+                return 0;
+
+            decimal d;
+            do
+            {
+                d = r.Next(max-min)+min;
+            }
+            while (notprime && IsPrime((int)d));
+            return d;
+        }
+
+        /// <summary>
+        /// Generates a random number that is a factor of a number
+        /// </summary>
+        /// <param name="factorof">[1,)</param>
+        /// <returns></returns>
+        public decimal GenerateNumber(int factorof)
+        {
+            if (factorof < 1)
+                throw new Exception("factorof has to be greater than 0");
+
+            List<int> factors = CalculateFactors(factorof);
+            if (factors.Count > 0)
+                return factors[r.Next(factors.Count)];
+            return 1;
         }
 
         /// <summary>
@@ -209,7 +271,7 @@ namespace mentalmath
         }
 
         /// <summary>
-        /// Calculates all Dividers of a number n. Multiples of Dividers too (for example, 24 -> 2,3,4,6,8,12
+        /// Calculates all Dividers of a number n. Multiples of Dividers too (for example, 24 -> 1,2,3,4,6,8,12,24
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
@@ -217,9 +279,10 @@ namespace mentalmath
         {
             List<int> results = new List<int>();
 
-            for(int i=2; i<=n/2; i++)
+            for(int i=1; i<=n/2; i++)
                 if (n % i == 0)
                     results.Add(i);
+            results.Add(n);
 
             return results;
         }

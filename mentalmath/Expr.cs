@@ -52,26 +52,6 @@ namespace mentalmath
             }
         }
 
-        private bool bracea;
-
-        /// <summary>
-        /// Determines if A have to be shown with a brace
-        /// </summary>
-        public bool BraceA
-        {
-            get { return bracea && !a.IsValue; }
-            set { bracea = value; }
-        }
-
-        private bool braceb;
-        /// <summary>
-        /// Determines if B have to be shown with a brace
-        /// </summary>
-        public bool BraceB
-        {
-            get { return braceb && !b.IsValue; }
-            set { braceb = value; }
-        }
 
         /// <summary>
         /// Solves the equation
@@ -114,7 +94,11 @@ namespace mentalmath
                 return "";
 
             StringBuilder sb = new StringBuilder();
-            if (BraceA)
+            if ( ((Operator == mentalmath.Operator.Divide) ||
+                 (A.Operator == mentalmath.Operator.Plus && Operator != mentalmath.Operator.Plus)||
+                 (A.Operator == mentalmath.Operator.Minus && Operator != mentalmath.Operator.Plus) ||
+                 (A.Operator == mentalmath.Operator.Divide && Operator == mentalmath.Operator.Multiply))&&
+                (A.GetType() == typeof(Expr)))
             {
                 sb.Append("(");
                 sb.Append(A.ToString());
@@ -129,7 +113,11 @@ namespace mentalmath
                 sb.Append(OperatorToChar(Operator));
                 sb.Append(" ");
 
-                if (BraceB)
+                if ( ( (Operator == mentalmath.Operator.Divide) ||
+                       (Operator == mentalmath.Operator.Multiply && B.Operator!= mentalmath.Operator.Multiply) ||
+                        (B.Operator == mentalmath.Operator.Minus) ||
+                        (Operator == mentalmath.Operator.Minus && B.Operator == mentalmath.Operator.Plus)) &&
+                    (B.GetType() == typeof(Expr)) )
                 {
                     sb.Append("(");
                     sb.Append(B.ToString());
