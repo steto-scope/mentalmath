@@ -88,7 +88,7 @@ namespace mentalmath
                 case "Minus":   
                 case "Multiply":
                 case "Divide":
-                case "MaxValue":
+                case "MaxResult":
                 case "MinOperators":
                 case "MaxOperators":
                     if (!exprgen.IsBusy)
@@ -132,12 +132,16 @@ namespace mentalmath
         void exprgen_DoWork(object sender, DoWorkEventArgs e)
         {
             bool failed;
+            Expr exp=null;
             do
             {
                 failed = false;
                 try
                 {
-                    e.Result = factory.Generate();
+                    exp = factory.Generate();
+                    if (exp.Solve() < 0)
+                        throw new Exception();
+                    e.Result = exp;
                 }
                 catch
                 {

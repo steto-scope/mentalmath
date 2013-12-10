@@ -107,7 +107,7 @@ namespace mentalmath
 
         void timer_Tick(object sender, EventArgs e)
         {
-            elapsed += (int)ReportInterval;
+            elapsed += (int)ReportInterval*2;
             if(elapsed>=Interval.TotalMilliseconds)
             {
                 if (CountdownAccomplished != null)

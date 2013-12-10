@@ -42,7 +42,7 @@ namespace mentalmath
                 return null;
 
             List<Operator> operators = new List<Operator>();
-            int numOperators = r.Next(Config.MaxOperators - Config.MinOperators) + Config.MinOperators;
+            int numOperators = r.Next((Config.MaxOperators - Config.MinOperators)+1) + Config.MinOperators;
             for(int i=0; i<numOperators ; i++)
             {
                 operators.Add(RandomOperator());
@@ -52,20 +52,25 @@ namespace mentalmath
         }
 
         /// <summary>
-        /// Generates recursively the Expression
+        /// Generates recursively an Expression
         /// </summary>
-        /// <param name="layer">The number of Operands to be in this Expression and Subexpressions</param>
+        /// <param name="operators">The list of operators for the actual subtree</param>
+        /// <param name="notprime">Specifies if the result of the expression should not be a prime (otherwise division would sometimes be boring)</param>
+        /// <param name="maxresult">maximum for the result of the actual subtree</param>
+        /// <param name="minresult">minimum for the result of the actual subtree</param>
+        /// <param name="factorof">If specified, this number forces that the result of the actual subtree have to be a divider of this factor. Used to get a good divisor</param>
         /// <returns></returns>
         private Expr Generate(List<Operator> operators, bool notprime,  int maxresult, int? minresult, decimal? factorof)
         {
-            
             Expr e = new Expr();
             e.Operator = operators.First();
             operators.RemoveAt(0);
 
             switch(operators.Count)
             {
-                case 0: //leaf reached, built expression
+                //leaf reached, built expression
+                //if 0 there are no more operators available and both A and B have to be actual numeric values
+                case 0: 
                     switch(e.Operator)
                     {
                         case Operator.Divide:
@@ -118,43 +123,60 @@ namespace mentalmath
                     }
                     break;
 
+                //1 operator is left, so in this branch A will get a new run, but B will get an actual value
                 case 1: 
                     switch(e.Operator)
                     {
                         case Operator.Divide:
                             e.A = Generate(operators, true, maxresult, 1, factorof);
-                            e.B = new ExprValue(GenerateNumber((int)e.A.Solve()));
+                            e.B = new ExprValue(GenerateNumber((int)e.A.Solve())==0? 1 : (int)e.A.Solve());
                             break;
                         case Operator.Multiply:
                             e.A = Generate(operators, false, (int)Math.Sqrt(maxresult)+1, null, factorof);
-                            e.B = new ExprValue(GenerateNumber(false,0,(int)Math.Sqrt(maxresult)+1));
+                            if (factorof == null)
+                                e.B = new ExprValue(GenerateNumber(false, 0, (int)Math.Sqrt(maxresult) + 1));
+                            else
+                                e.B = new ExprValue(factorof.Value / e.A.Solve());
                             break;
                         case Operator.Minus:
                             e.A = Generate(operators, false, maxresult, null, factorof);
-                            e.B = new ExprValue(GenerateNumber(false,0,(int)e.A.Solve()));
+                            if(factorof==null)
+                                e.B = new ExprValue(GenerateNumber(false,0,(int)e.A.Solve()));
+                            else
+                            {
+                                int w = (int)e.A.Solve();
+                                var m = GenerateNumber(false, 1, w); //pick a random number between 0 and maxresult
+                                int closest = CalculateFactors((int)factorof).ClosestTo((int)m); //get the biggest divider of maxresult that is smaller than the generated number
+                                e.B = new ExprValue(closest == 0 ? 0 : w - closest); 
+                            }
                             break;
                         default:
                             e.A = Generate(operators, false, maxresult/2, null, factorof);
-                            e.B = new ExprValue(GenerateNumber(false,0,maxresult/2));
+                            if(factorof==null)
+                                e.B = new ExprValue(GenerateNumber(false,0,maxresult/2));
+                            else
+                                e.B = new ExprValue(factorof.Value-e.A.Solve());
                             break;
                     }
 
                     break;
 
+                //2 or more operator left. Both A and B trigger a new recursion-step
                 case 2:
                 default:
+                    //split list
                     List<Operator> a = operators.Take((int)operators.Count / 2).ToList();
                     List<Operator> b = operators.Skip(a.Count).ToList();
-                    Console.WriteLine(a.Count + ":" + ", " + b.Count + ":" );
+                    
                     switch(e.Operator)
                     {
                         case Operator.Divide:
-                            e.A = Generate(a, true,  maxresult, minresult, factorof); //should not be a prime, this is boring
+                            e.A = Generate(a, true,  maxresult, minresult, factorof); //result should not be a prime, this is boring
                             e.B = Generate(b, false, (int)e.A.Solve(), minresult, e.A.Solve()); //has to be a factor of A
                             break;
                         case Operator.Minus:
                             e.A = Generate(a, false, maxresult, minresult, factorof);
-                            e.B = Generate(b, false, (int)e.A.Solve(), null, factorof);
+                            e.B = Generate(b, false, (int)e.A.Solve(), null, factorof); //have to be bigger than the result of A to stay positive
                             break;
                         case Operator.Multiply:
                             e.A = Generate(a, true, (int)Math.Sqrt(maxresult) + 1, minresult, factorof);
@@ -167,7 +189,6 @@ namespace mentalmath
                     }
 
                     
-
                     break;
             }
 
@@ -190,7 +211,7 @@ namespace mentalmath
                 throw new Exception("min has to be smaller than max");
 
             if (min - max == 0) //special case
-                return 0;
+                return 1;
 
             decimal d;
             do
@@ -198,6 +219,7 @@ namespace mentalmath
                 d = r.Next(max-min)+min;
             }
             while (notprime && IsPrime((int)d));
+            
             return d;
         }
 

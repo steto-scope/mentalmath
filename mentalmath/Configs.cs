@@ -185,15 +185,18 @@ namespace mentalmath
             MaxOperators = 1;
         }
 
+        private static readonly string file = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml";
+        private static readonly string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/";
 
         public void Save()
         {
             try
             {
                 XmlSerializer s = new XmlSerializer(this.GetType());
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/"))
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/");
-                FileStream fs = File.OpenWrite(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                File.Delete(file);
+                FileStream fs = File.OpenWrite(file);
                 s.Serialize(fs, this);
                 fs.Close();
             }
@@ -215,7 +218,7 @@ namespace mentalmath
                     return conf;
                 }
             }
-            catch
+            catch(Exception ex)
             {
             }
             return new Configs(); //no or invalid savefile? return defaults
