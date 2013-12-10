@@ -147,7 +147,7 @@ namespace mentalmath
                 {
                     failed = true;
                 }
-                Console.WriteLine(e.Result);
+                //Console.WriteLine(e.Result);
             }
             while (failed || e.Result==null || ((Expr)e.Result).Solve() > Config.MaxResult);
         }
@@ -207,10 +207,10 @@ namespace mentalmath
             if (Countdown.IsRunning)
             {
                 Countdown.Stop();
-                Countdown.Interval = new TimeSpan(0, 0, Config.Countdown);
             }
             else
             {
+                Countdown.Interval = new TimeSpan(0, 0, Config.Countdown);
                 Countdown.Start();
                 Raise("CountdownTotal");
             }
