@@ -19,7 +19,6 @@ namespace mentalmath
         /// <returns></returns>
         public static int ClosestTo(this List<int> list, int num)
         {
-            int d = int.MaxValue;
             int best = 0;
 
             foreach(int i in list.OrderBy(i=>i))

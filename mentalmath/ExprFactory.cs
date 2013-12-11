@@ -11,12 +11,12 @@ namespace mentalmath
     /// </summary>
     class ExprFactory
     {
-        private Configs cnf;
+        private GeneratorConfiguration cnf;
 
         /// <summary>
         /// The Configuration for Expression-Generation
         /// </summary>
-        public Configs Config
+        public GeneratorConfiguration Config
         {
             get { return cnf; }
             set { cnf = value; }
@@ -27,7 +27,7 @@ namespace mentalmath
         /// </summary>
         private Random r = new Random();
 
-        public ExprFactory(Configs c)
+        public ExprFactory(GeneratorConfiguration c)
         {
             Config = c;
         }

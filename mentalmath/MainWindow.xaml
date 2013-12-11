@@ -71,22 +71,22 @@
                     <Grid>
                         <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="10">
-                            <CheckBox Content="+" IsChecked="{Binding Config.Plus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
-                            <CheckBox Content="-" IsChecked="{Binding Config.Minus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
-                            <CheckBox Content="×" IsChecked="{Binding Config.Multiply, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
-                            <CheckBox Content="÷" IsChecked="{Binding Config.Divide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="+" IsChecked="{Binding Config.GeneratorConfig.Plus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
+                            <CheckBox Content="-" IsChecked="{Binding Config.GeneratorConfig.Minus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
+                            <CheckBox Content="×" IsChecked="{Binding Config.GeneratorConfig.Multiply, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,5,0" />
+                            <CheckBox Content="÷" IsChecked="{Binding Config.GeneratorConfig.Divide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                             <StackPanel Margin="10" Orientation="Horizontal">
                                 <TextBlock Text="Operations:   " />
-                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.MinOperators}" />
+                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.GeneratorConfig.MinOperators}" />
                                 <TextBlock Text="  to  "  />
-                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.MaxOperators}" />
+                                <xwpft:IntegerUpDown Minimum="1" Maximum="4" Value="{Binding Config.GeneratorConfig.MaxOperators}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="10">
                                 <TextBlock Text="Max. Result:   " />
-                                <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.MaxResult}" Width="80" />
+                                <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.GeneratorConfig.MaxResult}" Width="80" />
                                 <TextBlock Text=" ,  Countdown-Interval:  " />
-                                <xwpft:IntegerUpDown Minimum="1" IsEnabled="{Binding Countdown.IsRunning, Converter={StaticResource ibc}}"  Value="{Binding Config.Countdown}"  Width="50" />
+                                <xwpft:IntegerUpDown Minimum="1" IsEnabled="{Binding Countdown.IsRunning, Converter={StaticResource ibc}}"  Value="{Binding Config.GeneratorConfig.Countdown}"  Width="50" />
                                 <TextBlock Text=" s" />                                
                             </StackPanel>
                         </StackPanel>

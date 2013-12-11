@@ -11,6 +11,6 @@ namespace mentalmath
     /// </summary>
     public enum Operator
     {
-        Plus, Minus, Multiply, Divide, Root        
+        Plus, Minus, Multiply, Divide       
     }
 }

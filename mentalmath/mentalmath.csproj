@@ -87,6 +87,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApplicationConfiguration.cs" />
+    <Compile Include="ConfigBase.cs" />
     <Compile Include="CountdownTimer.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="InverseBooleanConverter.cs" />
@@ -101,7 +103,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configs.cs" />
+    <Compile Include="GeneratorConfiguration.cs" />
     <Compile Include="Expr.cs" />
     <Compile Include="ExprFactory.cs" />
     <Compile Include="ExprValue.cs" />

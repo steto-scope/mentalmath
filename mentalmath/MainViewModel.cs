@@ -41,7 +41,7 @@ namespace mentalmath
         {
             Reset();
             
-            Countdown = new CountdownTimer(new TimeSpan(0,0,(int)Config.Countdown), ReportInterval.HundredthSecond);
+            Countdown = new CountdownTimer(new TimeSpan(0,0,(int)Config.GeneratorConfig.Countdown), ReportInterval.HundredthSecond);
             Countdown.RepeatForever = true;
             Countdown.CountdownAccomplished += Countdown_CountdownAccomplished;
           
@@ -63,9 +63,9 @@ namespace mentalmath
         /// </summary>
         public void Reset()
         {
-            Config = Configs.Load();
-            Config.PropertyChanged += Config_PropertyChanged;
-            factory = new ExprFactory(Config);
+            Config = ApplicationConfiguration.Load();
+            Config.GeneratorConfig.PropertyChanged += Config_PropertyChanged;
+            factory = new ExprFactory(Config.GeneratorConfig);
             CurrentExpression = factory.Generate();
             NumCorrect = 0;
             NumIncorrect = 0;
@@ -91,6 +91,7 @@ namespace mentalmath
                 case "MaxResult":
                 case "MinOperators":
                 case "MaxOperators":
+                case "Countdown":
                     if (!exprgen.IsBusy)
                         exprgen.RunWorkerAsync();
                     Config.Save();
@@ -98,15 +99,17 @@ namespace mentalmath
             }
         }
 
-        private Configs config;
+
+        private ApplicationConfiguration conf;
         /// <summary>
-        /// The Configuration used for Expression Generation
+        /// Configuration of the Application
         /// </summary>
-        public Configs Config
+        public ApplicationConfiguration Config
         {
-            get { return config; }
-            set { config = value; }
+            get { return conf; }
+            set { conf = value; }
         }
+
 
         /// <summary>
         /// The Backgroundworker that generates the next expression
@@ -149,7 +152,7 @@ namespace mentalmath
                 }
                 //Console.WriteLine(e.Result);
             }
-            while (failed || e.Result==null || ((Expr)e.Result).Solve() > Config.MaxResult);
+            while (failed || e.Result==null || ((Expr)e.Result).Solve() > Config.GeneratorConfig.MaxResult);
         }
 
         #region Commands
@@ -210,7 +213,7 @@ namespace mentalmath
             }
             else
             {
-                Countdown.Interval = new TimeSpan(0, 0, Config.Countdown);
+                Countdown.Interval = new TimeSpan(0, 0, Config.GeneratorConfig.Countdown);
                 Countdown.Start();
                 Raise("CountdownTotal");
             }

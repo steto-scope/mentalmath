@@ -3,22 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace mentalmath
 {
-    public class Configs : INotifyPropertyChanged
+    [Serializable]
+    public class GeneratorConfiguration : ConfigBase
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void Raise(string name)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-        }
-
+       
         private bool plus;
         /// <summary>
         /// Plus Operator is allowed
@@ -87,17 +83,6 @@ namespace mentalmath
             }
         }
 
-
-        private bool root;
-        /// <summary>
-        /// Root-Operator is allowed. Not used yet.
-        /// </summary>
-        public bool Root
-        {
-            get { return root; }
-            set { root = value; Raise("Root"); }
-        }
-
         private decimal maxvalue;
         /// <summary>
         /// Maximum Operand Value
@@ -140,7 +125,9 @@ namespace mentalmath
         }
 
         private int minoperators;
-
+        /// <summary>
+        /// Number of minimum operators
+        /// </summary>
         public int MinOperators
         {
             get { return minoperators; }
@@ -155,7 +142,9 @@ namespace mentalmath
         }
 
         private int maxoperators;
-
+        /// <summary>
+        /// Number of maximum operators
+        /// </summary>
         public int MaxOperators
         {
             get { return maxoperators; }
@@ -170,12 +159,11 @@ namespace mentalmath
         }
 
 
-        public Configs()
+        public GeneratorConfiguration()
         {
             AllowedDecimalPlaces = 0;
             MaxResult = 999;
             MaxValue = 500;
-            Root = false;
             Plus = true;
             Minus = true;
             Multiply = true;
@@ -184,46 +172,27 @@ namespace mentalmath
             MinOperators = 1;
             MaxOperators = 1;
         }
-
-        private static readonly string file = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml";
-        private static readonly string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/";
-
-        public void Save()
+               
+        /// <summary>
+        /// Clones the Object (only Properties)
+        /// </summary>
+        /// <returns></returns>
+        public GeneratorConfiguration Clone()
         {
-            try
-            {
-                XmlSerializer s = new XmlSerializer(this.GetType());
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                File.Delete(file);
-                FileStream fs = File.OpenWrite(file);
-                s.Serialize(fs, this);
-                fs.Close();
-            }
-            catch //catch possible write-protection. in this case do not save configs
-            {
-            }
+            GeneratorConfiguration c = new GeneratorConfiguration();
+            foreach (PropertyInfo pi in GetType().GetProperties())
+                pi.SetValue(c, pi.GetValue(this));
+            return c;
         }
 
-        public static Configs Load()
+        /// <summary>
+        /// Applies all Properties of the given object
+        /// </summary>
+        /// <param name="c"></param>
+        public void Apply(GeneratorConfiguration c)
         {
-            try
-            {
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml"))
-                {
-                    FileStream fs = File.OpenRead(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/mentalmath/config.xml");
-                    XmlSerializer s = new XmlSerializer(typeof(Configs));
-                    Configs conf = (Configs)s.Deserialize(fs);
-                    fs.Close();
-                    return conf;
-                }
-            }
-            catch(Exception ex)
-            {
-            }
-            return new Configs(); //no or invalid savefile? return defaults
+            foreach(PropertyInfo pi in GetType().GetProperties())
+                pi.SetValue(this, pi.GetValue(c));
         }
-
-
     }
 }
