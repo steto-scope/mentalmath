@@ -87,8 +87,11 @@
                                 <xwpft:IntegerUpDown Minimum="10"  Value="{Binding Config.GeneratorConfig.MaxResult}" Width="80" />
                                 <TextBlock Text=" ,  Countdown-Interval:  " />
                                 <xwpft:IntegerUpDown Minimum="1" IsEnabled="{Binding Countdown.IsRunning, Converter={StaticResource ibc}}"  Value="{Binding Config.GeneratorConfig.Countdown}"  Width="50" />
-                                <TextBlock Text=" s" />                                
-                            </StackPanel>
+                                <TextBlock Text=" s" />
+                                    <!--<ComboBox ItemsSource="{Binding Config.GeneratorProfiles}" Text="{Binding ProfileName}" DisplayMemberPath="Name" Width="80" IsEditable="True" SelectionChanged="ComboBox_Selected"/>
+                                    <Button Content="Save" Command="{Binding SaveProfileCommand}" />
+                                    <Button Content="Remove" Command="{Binding RemoveProfileCommand}" />-->
+                                </StackPanel>
                         </StackPanel>
                     </Grid>
                 </Expander>

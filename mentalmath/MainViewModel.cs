@@ -47,6 +47,15 @@ namespace mentalmath
           
         }
 
+        private string profileName;
+
+        public string ProfileName
+        {
+            get { return profileName; }
+            set { profileName = value; Raise("ProfileName"); }
+        }
+
+
         /// <summary>
         /// Triggers the EnterSolution-Comnmand if the countdown reaches zero.
         /// </summary>
@@ -164,7 +173,7 @@ namespace mentalmath
             get
             {
                 if (enterSolution == null)
-                    enterSolution = new RelayCommand(new Action(EnterSolution));
+                    enterSolution = new RelayCommand(p=> EnterSolution(p));
                 return (RelayCommand)enterSolution;
             }
         }
@@ -172,7 +181,7 @@ namespace mentalmath
         /// <summary>
         /// The command executed by pressing enter 
         /// </summary>
-        public void EnterSolution()
+        public void EnterSolution(object param)
         {
             decimal d = 0;
             bool erg = decimal.TryParse(UserInput, out d);
@@ -200,12 +209,12 @@ namespace mentalmath
             get
             {
                 if (startstopcountdown == null)
-                    startstopcountdown = new RelayCommand(new Action(StartStopCountdown));
+                    startstopcountdown = new RelayCommand(p=>StartStopCountdown(p));
                 return (RelayCommand)startstopcountdown;
             }
         }
 
-        public void StartStopCountdown()
+        public void StartStopCountdown(object param)
         {
             if (Countdown.IsRunning)
             {
@@ -218,6 +227,83 @@ namespace mentalmath
                 Raise("CountdownTotal");
             }
         }
+
+
+        private ICommand changeProfileCommand;
+
+        public RelayCommand ChangeProfileCommand
+        {
+            get
+            {
+                if (changeProfileCommand == null)
+                    changeProfileCommand = new RelayCommand(p=>ChangeProfile(p), p=> CanChangeProfile(p));
+                return (RelayCommand)changeProfileCommand;
+            }
+        }
+
+        public void ChangeProfile(object param)
+        {
+            if (param != null && param is GeneratorConfiguration)
+            {
+                Config.GeneratorConfig.Apply((GeneratorConfiguration)param);
+                ProfileName = ((GeneratorConfiguration)param).Name;
+            }
+        }
+
+        public bool CanChangeProfile(object param)
+        {
+            return !Countdown.IsRunning;
+        }
+
+
+        private ICommand saveProfileCommand;
+
+        public RelayCommand SaveProfileCommand
+        {
+            get
+            {
+                if (saveProfileCommand == null)
+                    saveProfileCommand = new RelayCommand(p=>SaveProfile(p));
+                return (RelayCommand)saveProfileCommand;
+            }
+        }
+
+        public void SaveProfile(object param)
+        {
+            string pname = ProfileName;
+            
+            if (!string.IsNullOrWhiteSpace(pname))
+            {
+                Config.GeneratorProfiles.Remove(p => p.Name == ProfileName);
+                GeneratorConfiguration conf = Config.GeneratorConfig.Clone();
+                conf.Name = pname;
+                Config.GeneratorProfiles.Add(conf);
+                Config.Raise("GeneratorProfiles");
+            }
+        }
+
+        private ICommand removeProfileCommand;
+
+        public RelayCommand RemoveProfileCommand
+        {
+            get
+            {
+                if (removeProfileCommand == null)
+                    removeProfileCommand = new RelayCommand(p=>RemoveProfile(p), p=>CanRemoveProfile(p));
+                return (RelayCommand)removeProfileCommand;
+            }
+        }
+
+        public void RemoveProfile(object param)
+        {
+            Config.GeneratorProfiles.Remove(p => p.Name == ProfileName);
+        }
+
+        public bool CanRemoveProfile(object param)
+        {
+            return true;
+        }
+
 
         #endregion
 

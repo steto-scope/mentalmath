@@ -14,6 +14,17 @@ namespace mentalmath
     [Serializable]
     public class GeneratorConfiguration : ConfigBase
     {
+
+        private string name;
+        /// <summary>
+        /// Name of the configuration
+        /// </summary>
+        public string Name
+        {
+            get { return name; }
+            set { name = value; Raise("Name"); }
+        }
+
        
         private bool plus;
         /// <summary>

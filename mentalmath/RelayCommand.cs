@@ -9,111 +9,48 @@ namespace mentalmath
 {
     public class RelayCommand : ICommand
     {
+        #region Fields
 
-        #region private fields
+        readonly Action<object> _execute;
+        readonly Predicate<object> _canExecute;
 
-        private readonly Action execute;
+        #endregion // Fields
 
-        private readonly Func<bool> canExecute;
+        #region Constructors
 
-        #endregion
-
-
-
-        public event EventHandler CanExecuteChanged
-        {
-
-            // wire the CanExecutedChanged event only if the canExecute func
-
-            // is defined (that improves perf when canExecute is not used)
-
-            add
-            {
-
-                if (this.canExecute != null)
-
-                    CommandManager.RequerySuggested += value;
-
-            }
-
-            remove
-            {
-
-                if (this.canExecute != null)
-
-                    CommandManager.RequerySuggested -= value;
-
-            }
-
-        }
-
-
-
-        /// <summary>
-
-        /// Initializes a new instance of the RelayCommand class
-
-        /// </summary>
-
-        /// <param name="execute">The execution logic.</param>
-
-        public RelayCommand(Action execute)
-
+        public RelayCommand(Action<object> execute)
             : this(execute, null)
         {
-
         }
 
-
-
-        /// <summary>
-
-        /// Initializes a new instance of the RelayCommand class
-
-        /// </summary>
-
-        /// <param name="execute">The execution logic.</param>
-
-        /// <param name="canExecute">The execution status logic.</param>
-
-        public RelayCommand(Action execute, Func<bool> canExecute)
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
-
             if (execute == null)
-
                 throw new ArgumentNullException("execute");
 
-
-
-            this.execute = execute;
-
-            this.canExecute = canExecute;
-
+            _execute = execute;
+            _canExecute = canExecute;
         }
+        #endregion // Constructors
 
-
-
-        public void Execute(object parameter)
-        {
-
-            this.execute();
-
-        }
-
-
+        #region ICommand Members
 
         public bool CanExecute(object parameter)
         {
-
-            return this.canExecute == null ? true : this.canExecute();
-
+            return _canExecute == null ? true : _canExecute(parameter);
         }
 
-
-
-        void ICommand.Execute(object parameter)
+        public event EventHandler CanExecuteChanged
         {
-            this.execute();
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
+
+        public void Execute(object parameter)
+        {
+            _execute(parameter);
+        }
+
+        #endregion // ICommand Members
     }
 }

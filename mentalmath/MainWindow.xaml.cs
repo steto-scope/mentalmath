@@ -73,6 +73,15 @@ namespace mentalmath
                ((MainViewModel)DataContext).EnterSolutionCommand.Execute(null);
             }
         }
+
+        private void ComboBox_Selected(object sender, RoutedEventArgs e)
+        {
+            if(DataContext!=null && DataContext is MainViewModel && sender is ComboBox)
+            {
+                ComboBox box = (ComboBox)sender;
+                ((MainViewModel)DataContext).ChangeProfileCommand.Execute(box.SelectedItem);
+            }
+        }
         
 
     }
