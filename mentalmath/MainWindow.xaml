@@ -88,9 +88,26 @@
                                 <TextBlock Text=" ,  Countdown-Interval:  " />
                                 <xwpft:IntegerUpDown Minimum="1" IsEnabled="{Binding Countdown.IsRunning, Converter={StaticResource ibc}}"  Value="{Binding Config.GeneratorConfig.Countdown}"  Width="50" />
                                 <TextBlock Text=" s" />
-                                    <!--<ComboBox ItemsSource="{Binding Config.GeneratorProfiles}" Text="{Binding ProfileName}" DisplayMemberPath="Name" Width="80" IsEditable="True" SelectionChanged="ComboBox_Selected"/>
-                                    <Button Content="Save" Command="{Binding SaveProfileCommand}" />
-                                    <Button Content="Remove" Command="{Binding RemoveProfileCommand}" />-->
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <TextBlock Text="Profile:" Margin="0,0,10,0" VerticalAlignment="Center" />
+                                    <ComboBox ItemsSource="{Binding Config.GeneratorProfiles}" Text="{Binding ProfileName}" DisplayMemberPath="Name" Width="150" IsEditable="True" SelectionChanged="ComboBox_Selected"/>
+                                    <Button Command="{Binding SaveProfileCommand}">
+                                        <Button.Content>
+                                            <Grid>
+                                                <Path Data="M0,1 L0,16 L16,16 L16,3 L13,0 L1,0" Fill="#41B1FF" />
+                                                <Path Data="M2,1 L2,7 L13,7 L13,1" Fill="White" />
+                                                <Path Data="M10,2 L10,6 L12,6 L12,2" Fill="#41B1FF" />
+                                            </Grid>
+                                        </Button.Content>
+                                    </Button>
+                                    <Button  Command="{Binding RemoveProfileCommand}">
+                                        <Button.Content>
+                                            <Grid>
+                                                <Path Data="M1,0 L0,1 L7,8 L0,15 L1,16 L8,9 L15,16 L16,15 L9,8 L16,1 L15,0 L8,7" Fill="Red" />
+                                            </Grid>
+                                        </Button.Content>
+                                    </Button>
                                 </StackPanel>
                         </StackPanel>
                     </Grid>

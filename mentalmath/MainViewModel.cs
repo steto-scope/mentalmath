@@ -256,6 +256,8 @@ namespace mentalmath
         }
 
 
+
+
         private ICommand saveProfileCommand;
 
         public RelayCommand SaveProfileCommand
