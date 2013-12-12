@@ -42,7 +42,7 @@ namespace mentalmath
                          Minus = false,
                          Divide = false,
                          MaxResult = 100,
-                         Name = "Small 1x1"
+                         Name = "Small Times Table"
                     },
                     new GeneratorConfiguration()
                     {
@@ -50,7 +50,7 @@ namespace mentalmath
                          Minus = false,
                          Divide = false,
                          MaxResult = 1000,
-                         Name = "Big 1x1"
+                         Name = "Big Times Table"
                     }
                 };
             }
